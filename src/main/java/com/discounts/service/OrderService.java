@@ -26,7 +26,7 @@ public class OrderService {
         this.userRepository = userRepository;
     }
 
-    private static final BigDecimal VIP_DISCOUNT = new BigDecimal("25");
+    private static final BigDecimal VIP_DISCOUNT = new BigDecimal("20");
     private static final BigDecimal AMOUNT_DISCOUNT = new BigDecimal("5");
     private static final BigDecimal AMOUNT_THRESHOLD = new BigDecimal("1000");
     private static final BigDecimal ONE_HUNDRED = new BigDecimal("100");
