@@ -1,0 +1,59 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  JAVA_VERSION: '17'
+
+steps:
+
+# 1. Install Java
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '$(JAVA_VERSION)'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+  displayName: 'Install Java'
+
+# 2. Build project + run unit tests
+- script: mvn clean install
+  displayName: 'Build and run unit tests'
+
+# 3. Start Spring Boot app
+- script: |
+    echo "Starting Spring Boot app..."
+    nohup mvn spring-boot:run > app.log 2>&1 &
+    sleep 25
+  displayName: 'Start API'
+
+# 4. Install Node + Newman
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
+
+- script: npm install -g newman
+  displayName: 'Install Newman'
+
+# 5. Run Postman tests
+- script: |
+    newman run postman/collection.json \
+      --reporters cli,junit \
+      --reporter-junit-export results.xml
+  displayName: 'Run Postman tests'
+
+# 6. Publish API test results
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: 'results.xml'
+    testRunTitle: 'Postman API Tests'
+  displayName: 'Publish Postman Results'
+
+# 7. Publish Java test results
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    testRunTitle: 'Unit Tests'
+  displayName: 'Publish Unit Test Results'

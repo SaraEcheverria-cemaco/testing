@@ -1,0 +1,1103 @@
+{
+	"info": {
+		"_postman_id": "5058e8e1-bc55-4796-bd21-4e10153d379d",
+		"name": "testsDescuentosCemaco",
+		"description": "QA Challenge - Author: Sara Echeverría",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41890749"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "regularUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"has token\", () => pm.expect(pm.response.json().token).to.not.be.empty);",
+									"pm.test(\"user is NOT VIP\", () => pm.expect(pm.response.json().vip).to.eql(false));",
+									"pm.collectionVariables.set('regularUserToken', pm.response.json().token);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"user1\", \"password\": \"password123\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vipUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"user IS VIP\", () => pm.expect(pm.response.json().vip).to.eql(true));",
+									"pm.collectionVariables.set('vipUserToken', pm.response.json().token);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"vipuser\", \"password\": \"password123\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invalidPassword",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 401\", () => pm.response.to.have.status(401));",
+									"pm.test(\"has error message\", () => pm.expect(pm.response.json().message).to.include('Credenciales'));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"user1\", \"password\": \"wrong\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "userNotFound",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 401\", () => pm.response.to.have.status(401));\r",
+									"pm.test(\"has error message\", () => pm.expect(pm.response.json().message).to.include('Credenciales'));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"noexiste\", \"password\": \"password123\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "missingUsername",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"validation error\", () => pm.expect(pm.response.json()).to.have.property('username'));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"password\": \"password123\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "missingPassword",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"validation error\", () => pm.expect(pm.response.json()).to.have.property('password'));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"user1\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ordersCreation",
+			"item": [
+				{
+					"name": "regular < 1000",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"NO discount applied\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.discountPercentage).to.eql(0);",
+									"    pm.expect(j.vipDiscount).to.eql(false);",
+									"    pm.expect(j.amountDiscount).to.eql(false);",
+									"    pm.expect(j.finalAmount).to.eql(500.00);",
+									"});",
+									"pm.collectionVariables.set('lastOrderId', pm.response.json().id);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 500.00}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "regular > 1000",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"5% discount applied\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.discountPercentage).to.eql(5);",
+									"    pm.expect(j.amountDiscount).to.eql(true);",
+									"    pm.expect(j.vipDiscount).to.eql(false);",
+									"    pm.expect(j.finalAmount).to.eql(1425.00);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 1500.00}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vip < 1000 ***",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"VIP discount flag is true\", () => {",
+									"    pm.expect(pm.response.json().vipDiscount).to.eql(true);",
+									"});",
+									"pm.test(\"!ERROR: expected 20% VIP discount but did not get that value\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.discountPercentage).to.eql(20, `expected 20% per business rules, got ${j.discountPercentage}%`);",
+									"    pm.expect(j.finalAmount).to.eql(400.00, `expected 400 (500 * 0.80), got ${j.finalAmount}`);",
+									"});",
+									"const j = pm.response.json();",
+									"console.log(`<<< DEFECT FOUND: VIP discount is ${j.discountPercentage}% (expected 20%). final amount is ${j.finalAmount} (expected 400)`);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{vipUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 500.00}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vip > 1000 ***",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"both discount flags are true\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.vipDiscount).to.eql(true);",
+									"    pm.expect(j.amountDiscount).to.eql(true);",
+									"});",
+									"pm.test(\"!ERROR: expected 25% total discount (20%+5%) but did not get that value\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.discountPercentage).to.eql(25, `expected 25% (20% VIP + 5% amount), got ${j.discountPercentage}%`);",
+									"    pm.expect(j.finalAmount).to.eql(1500.00, `expected 1500 (2000 * 0.75), got ${j.finalAmount}`);",
+									"});",
+									"const j = pm.response.json();",
+									"console.log(`<<< DEFECT FOUND: Total discount is ${j.discountPercentage}% (expected 25%). final amount is ${j.finalAmount} (expected 1500)`);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{vipUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 2000.00}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "boundary = 1000",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"mount should NOT trigger extra discount\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.amountDiscount).to.eql(false, 'Discount only applies when amount > 1000, not =1000');",
+									"    pm.expect(j.discountPercentage).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 1000.00}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "boundary = 1000.01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"amount SHOULD trigger extra discount\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.amountDiscount).to.eql(true, 'Amount > 1000 triggers 5% discount');",
+									"    pm.expect(j.discountPercentage).to.eql(5);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 1000.01}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "vip boundary = 1000",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"only VIP discount, no amount discount\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.vipDiscount).to.eql(true);",
+									"    pm.expect(j.amountDiscount).to.eql(false, 'Amount=1000 should not trigger extra discount');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{vipUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 1000.00}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "largeAmount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"large amounts are handled correctly\", () => {",
+									"    const j = pm.response.json();",
+									"    pm.expect(j.originalAmount).to.eql(999999.99);",
+									"    pm.expect(j.amountDiscount).to.eql(true);",
+									"    pm.expect(j.finalAmount).to.be.below(j.originalAmount);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 999999.99}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "noToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 403\", () => pm.response.to.have.status(403));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 500.00}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "invalidToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 403\", () => pm.response.to.have.status(403));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer invalid_token"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 500.00}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "negativeAmount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"validation error for negative amount\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('amount');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": -100}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "zeroAmount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"validation error for zero amount\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('amount');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"amount\": 0}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "missingAmount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 400\", () => pm.response.to.have.status(400));",
+									"pm.test(\"validation error for missing amount\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('amount');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ordersFilter (queries)",
+			"item": [
+				{
+					"name": "allOrders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"response is array\", () => {",
+									"    pm.expect(pm.response.json()).to.be.an('array');",
+									"});",
+									"pm.test(\"orders belong to authenticated user\", () => {",
+									"    const orders = pm.response.json();",
+									"    if (orders.length > 0) {",
+									"        orders.forEach(order => {",
+									"            pm.expect(order.username).to.eql('user1');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "allOrdersNoToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 403\", () => pm.response.to.have.status(403));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "byID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"returns correct order ID\", () => {",
+									"    const expectedId = parseInt(pm.collectionVariables.get('lastOrderId'));",
+									"    pm.expect(pm.response.json().id).to.eql(expectedId);",
+									"});",
+									"pm.test(\"order has complete structure\", () => {",
+									"    const order = pm.response.json();",
+									"    pm.expect(order).to.have.property('username');",
+									"    pm.expect(order).to.have.property('originalAmount');",
+									"    pm.expect(order).to.have.property('finalAmount');",
+									"    pm.expect(order).to.have.property('discountPercentage');",
+									"    pm.expect(order).to.have.property('createdAt');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders/{{lastOrderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"{{lastOrderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "byIDNotFound",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 404\", () => pm.response.to.have.status(404));",
+									"pm.test(\"error message indicates order not found\", () => {",
+									"    pm.expect(pm.response.json().message).to.include('no encontrada');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{regularUserToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders/99999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"99999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "byIDNoToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status 403\", () => pm.response.to.have.status(403));"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "regularUserToken",
+			"value": ""
+		},
+		{
+			"key": "vipUserToken",
+			"value": ""
+		},
+		{
+			"key": "lastOrderId",
+			"value": ""
+		}
+	]
+}
